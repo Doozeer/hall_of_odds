@@ -57,6 +57,13 @@
     (12
      "Congratulations! You have escaped the Hall of Odds!")))
 
+;; Alternate description for the room with the door
+(define alt-description 
+  (string-append "You are in a small room, light shines in through two windows "
+                 "on the east and west walls. On the north wall, the big "
+                 "steel door is now open, allowing you to exit the halls. To "
+                 "the right of this door, you see a <<button>> on the wall."))
+
 ;; Room connections mapping. Each sublist begins with the number of
 ;; a room, followed by lists associating each direction to the number
 ;; of the connecting room. A zero means there's no room connected in
@@ -75,6 +82,10 @@
     (11 (north 0)  (south 7)  (east 0) (west 0))
     (12 (north 0)  (south 0)  (east 0) (west 0))))
 
+;; Alternate directions for the room with the door
+(define alt-directions
+  '((north 12)  (south 7)  (east 0) (west 0)))
+
 ;; Objects available for 'push' in each room. Each sublist begins
 ;; with the number of a room, followed by lists containing the names
 ;; of the objects present in it.
@@ -91,6 +102,10 @@
     (10 (button))
     (11 (button) (steel door))
     (12 )))
+
+;; Alternate pushables for the room with the door
+(define alt-pushables
+  '((button)))
 
 ;; Game's main commands. Each sublist begins with a list of commands separated
 ;; in lists, followed by a reference to the function that is related to those
@@ -121,6 +136,7 @@
 (define pushables     (make-hash))
 (define obj-actions   (make-hash))
 (define button-states (make-hash))
+(define alt-states    (make-hash))
 
 ;; Initializes variables before starting the game
 (define (initialize)
@@ -129,6 +145,11 @@
   (set-room-directions directions-list)
   (set-room-pushables pushables-list)
   (set-obj-actions (obj-action-list))
+  
+  ;; Init alt-states
+  (hash-set! alt-states 'description alt-description)
+  (hash-set! alt-states 'directions  alt-directions)
+  (hash-set! alt-states 'pushables   alt-pushables)
   
   ;; Init deactivated buttons
   (for-each (lambda (n)
@@ -240,24 +261,27 @@
   (if (zero? (lookup 11 'north))
       (case (every (lambda (x) (eq? x #t)) (hash-values button-states))
         ((#t)
-         (hash-set! directions 11 '((north 12)  (south 7)  (east 0) (west 0)))
-         (hash-set! descriptions 11 (string-append
-                                     "You are in a small room, light shines in through two windows "
-                                     "on the east and west walls. On the north wall, the big "
-                                     "steel door is now open, allowing you to exit the halls. To "
-                                     "the right of this door, you see a <<button>> on the wall."))
-         (hash-set! pushables 11 '((button)))
+         (swap-states 11)
          (printf "A moment later, you hear a loud sound, as if something has been unlocked.\n")))
       (case (every (lambda (x) (eq? x #t)) (hash-values button-states))
         ((#f)
-         (hash-set! directions 11 '((north 0)  (south 7)  (east 0) (west 0)))
-         (hash-set! descriptions 11 (string-append
-                                     "You are in a small room, light shines in through two windows "
-                                     "on the east and west walls. On the north wall, you see a big "
-                                     "<<steel door>>, which is firmly shut. To the right of this door, "
-                                     "you see a <<button>> on the wall."))
-         (hash-set! pushables 11 '((button) (steel door)))
+         (swap-states 11)
          (printf "A moment later, you hear a loud sound, as if a door has been shut.\n")))))
+
+;; This function swaps room states to open and close the door.
+(define (swap-states rid)
+  (let [(temp-descr (hash-ref alt-states 'description))
+        (temp-dirs  (hash-ref alt-states 'directions))
+        (temp-pushs (hash-ref alt-states 'pushables))]
+    ;; Swap descriptions
+    (hash-set! alt-states 'description (hash-ref descriptions rid))
+    (hash-set! descriptions rid temp-descr)
+    ;; Swap directions
+    (hash-set! alt-states 'directions (hash-ref directions rid))
+    (hash-set! directions rid temp-dirs)
+    ;; Swap pushables
+    (hash-set! alt-states 'pushables (hash-ref pushables rid))
+    (hash-set! pushables rid temp-pushs)))
 
 ;; Execute steel door action
 (define (door rid)

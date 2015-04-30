@@ -2,20 +2,73 @@
 
 (require srfi/1)
 
+;; Room descriptions
+(define description-list '(
+                           (1
+                            "You are in a small room, illuminated only by the light "
+                            "that shines in from two small windows in the walls to "
+                            "the south and west. You see a <<button>> on the north wall, "
+                            "near the northeast corner of the room.")
+                           (2
+                            "You are in a small room, light shines in through a single "
+                            "window on the south wall. You can see a <<button>> in the "
+                            "middle of the north wall.")
+                           (3
+                            "You are in a small room, illuminated only by the light "
+                            "that shines in from two small windows in the walls to "
+                            "the south and east. You see a <<button>> on the north wall, "
+                            "near the northwest corner of the room.")
+                           (4
+                            "You are in a small room, light shines in through a single "
+                            "window on the east wall. You can see a <<button>> in the "
+                            "middle of the west wall.")
+                           (5
+                            "You are in a small room, light shines in through three windows "
+                            "on the walls to the north, east, and south. You can see a "
+                            "<<button>> below the window in the north wall.")
+                           (6
+                            "You are in a small room, light shines in through a single "
+                            "window on the north wall. You can see a <<button>> below "
+                            "the window.")
+                           (7
+                            "You are in a small room. This one is poorly lit, with light "
+                            "coming in only from the neighbouring rooms, through the passages. "
+                            "Despite the lower visibility, you can see a <<button>> on the "
+                            "north wall, near the northeast corner of the room.")
+                           (8
+                            "You are in a small room, light shines in through a single "
+                            "window on the north wall. You can see a <<button>> below "
+                            "the window.")
+                           (9
+                            "You are in a small room, light shines in through three windows "
+                            "on the walls to the north, west, and south. You can see a "
+                            "<<button>> below the window in the north wall.")
+                           (10
+                            "You are in a small room, light shines in through a single "
+                            "window on the west wall. You can see a <<button>> in the "
+                            "middle of the east wall.")
+                           (11
+                            "You are in a small room, light shines in through two windows "
+                            "on the east and west walls. On the north wall, you see a big "
+                            "<<steel door>>, which is firmly shut. To the right of this door, "
+                            "you see a <<button>> on the wall.")
+                           (12
+                            "Congratulations! You have escaped the Hall of Odds!")))
+
 ;; Room connections mapping
 (define directions-list '(
-                         (1  (north 10) (south 0)  (east 2) (west 0))
-                         (2  (north 0)  (south 0)  (east 3) (west 1))
-                         (3  (north 4)  (south 0)  (east 0) (west 2))
-                         (4  (north 6)  (south 3)  (east 0) (west 0))
-                         (5  (north 0)  (south 0)  (east 0) (west 6))
-                         (6  (north 0)  (south 4)  (east 5) (west 7))
-                         (7  (north 11) (south 0)  (east 6) (west 8))
-                         (8  (north 0)  (south 10) (east 7) (west 9))
-                         (9  (north 0)  (south 0)  (east 8) (west 0))
-                         (10 (north 8)  (south 1)  (east 0) (west 0))
-                         (11 (north 0)  (south 7)  (east 0) (west 0))
-                         (12 (north 0)  (south 0)  (east 0) (west 0))))
+                          (1  (north 10) (south 0)  (east 2) (west 0))
+                          (2  (north 0)  (south 0)  (east 3) (west 1))
+                          (3  (north 4)  (south 0)  (east 0) (west 2))
+                          (4  (north 6)  (south 3)  (east 0) (west 0))
+                          (5  (north 0)  (south 0)  (east 0) (west 6))
+                          (6  (north 0)  (south 4)  (east 5) (west 7))
+                          (7  (north 11) (south 0)  (east 6) (west 8))
+                          (8  (north 0)  (south 10) (east 7) (west 9))
+                          (9  (north 0)  (south 0)  (east 8) (west 0))
+                          (10 (north 8)  (south 1)  (east 0) (west 0))
+                          (11 (north 0)  (south 7)  (east 0) (west 0))
+                          (12 (north 0)  (south 0)  (east 0) (west 0))))
 
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
@@ -41,55 +94,55 @@
   
   ;; Room descriptions
   (hash-set! descriptions 1 (string-append
-             "You are in a small room, illuminated only by the light "
-             "that shines in from two small windows in the walls to "
-             "the south and west. You see a <<button>> on the north wall, "
-             "near the northeast corner of the room."))
+                             "You are in a small room, illuminated only by the light "
+                             "that shines in from two small windows in the walls to "
+                             "the south and west. You see a <<button>> on the north wall, "
+                             "near the northeast corner of the room."))
   (hash-set! descriptions 2  (string-append
-             "You are in a small room, light shines in through a single "
-             "window on the south wall. You can see a <<button>> in the "
-             "middle of the north wall."))
+                              "You are in a small room, light shines in through a single "
+                              "window on the south wall. You can see a <<button>> in the "
+                              "middle of the north wall."))
   (hash-set! descriptions 3  (string-append
-             "You are in a small room, illuminated only by the light "
-             "that shines in from two small windows in the walls to "
-             "the south and east. You see a <<button>> on the north wall, "
-             "near the northwest corner of the room."))
+                              "You are in a small room, illuminated only by the light "
+                              "that shines in from two small windows in the walls to "
+                              "the south and east. You see a <<button>> on the north wall, "
+                              "near the northwest corner of the room."))
   (hash-set! descriptions 4  (string-append
-             "You are in a small room, light shines in through a single "
-             "window on the east wall. You can see a <<button>> in the "
-             "middle of the west wall."))
+                              "You are in a small room, light shines in through a single "
+                              "window on the east wall. You can see a <<button>> in the "
+                              "middle of the west wall."))
   (hash-set! descriptions 5  (string-append
-             "You are in a small room, light shines in through three windows "
-             "on the walls to the north, east, and south. You can see a "
-             "<<button>> below the window in the north wall."))
+                              "You are in a small room, light shines in through three windows "
+                              "on the walls to the north, east, and south. You can see a "
+                              "<<button>> below the window in the north wall."))
   (hash-set! descriptions 6  (string-append
-             "You are in a small room, light shines in through a single "
-             "window on the north wall. You can see a <<button>> below "
-             "the window."))
+                              "You are in a small room, light shines in through a single "
+                              "window on the north wall. You can see a <<button>> below "
+                              "the window."))
   (hash-set! descriptions 7  (string-append
-             "You are in a small room. This one is poorly lit, with light "
-             "coming in only from the neighbouring rooms, through the passages. "
-             "Despite the lower visibility, you can see a <<button>> on the "
-             "north wall, near the northeast corner of the room."))
+                              "You are in a small room. This one is poorly lit, with light "
+                              "coming in only from the neighbouring rooms, through the passages. "
+                              "Despite the lower visibility, you can see a <<button>> on the "
+                              "north wall, near the northeast corner of the room."))
   (hash-set! descriptions 8  (string-append
-             "You are in a small room, light shines in through a single "
-             "window on the north wall. You can see a <<button>> below "
-             "the window."))
+                              "You are in a small room, light shines in through a single "
+                              "window on the north wall. You can see a <<button>> below "
+                              "the window."))
   (hash-set! descriptions 9  (string-append
-             "You are in a small room, light shines in through three windows "
-             "on the walls to the north, west, and south. You can see a "
-             "<<button>> below the window in the north wall."))
+                              "You are in a small room, light shines in through three windows "
+                              "on the walls to the north, west, and south. You can see a "
+                              "<<button>> below the window in the north wall."))
   (hash-set! descriptions 10 (string-append
-              "You are in a small room, light shines in through a single "
-              "window on the west wall. You can see a <<button>> in the "
-              "middle of the east wall."))
+                              "You are in a small room, light shines in through a single "
+                              "window on the west wall. You can see a <<button>> in the "
+                              "middle of the east wall."))
   (hash-set! descriptions 11 (string-append
-              "You are in a small room, light shines in through two windows "
-              "on the east and west walls. On the north wall, you see a big "
-              "<<steel door>>, which is firmly shut. To the right of this door, "
-              "you see a <<button>> on the wall."))
+                              "You are in a small room, light shines in through two windows "
+                              "on the east and west walls. On the north wall, you see a big "
+                              "<<steel door>>, which is firmly shut. To the right of this door, "
+                              "you see a <<button>> on the wall."))
   (hash-set! descriptions 12 (string-append
-              "Congratulations! You have escaped the Hall of Odds!"))
+                              "Congratulations! You have escaped the Hall of Odds!"))
   
   (set-room-directions directions-list)
   
@@ -176,11 +229,11 @@
 ;; Execute button action in the specified room
 (define (button rid)
   (case (hash-has-key? button-states rid)
-      ((#t)
-       (hash-set! button-states rid (not (hash-ref button-states rid)))
-       (printf "You push the button. A high pitched beep sounds, but you wonder what it means.\n")
-       (eval-buttons))
-      ((#f) (printf "[ERROR] Button undefined for room ~a.\n" rid)))
+    ((#t)
+     (hash-set! button-states rid (not (hash-ref button-states rid)))
+     (printf "You push the button. A high pitched beep sounds, but you wonder what it means.\n")
+     (eval-buttons))
+    ((#f) (printf "[ERROR] Button undefined for room ~a.\n" rid)))
   (new-cycle rid))
 
 ;; Control opening of the steel door. If the door is closed and all button
@@ -190,25 +243,25 @@
 (define (eval-buttons)
   (if (zero? (lookup 11 'north))
       (case (every (lambda (x) (eq? x #t)) (hash-values button-states))
-          ((#t)
-           (hash-set! directions 11 '((north 12)  (south 7)  (east 0) (west 0)))
-           (hash-set! descriptions 11 (string-append
-              "You are in a small room, light shines in through two windows "
-              "on the east and west walls. On the north wall, the big "
-              "steel door is now open, allowing you to exit the halls. To "
-              "the right of this door, you see a <<button>> on the wall."))
-           (hash-set! pushables 11 '((button)))
-           (printf "A moment later, you hear a loud sound, as if something has been unlocked.\n")))
+        ((#t)
+         (hash-set! directions 11 '((north 12)  (south 7)  (east 0) (west 0)))
+         (hash-set! descriptions 11 (string-append
+                                     "You are in a small room, light shines in through two windows "
+                                     "on the east and west walls. On the north wall, the big "
+                                     "steel door is now open, allowing you to exit the halls. To "
+                                     "the right of this door, you see a <<button>> on the wall."))
+         (hash-set! pushables 11 '((button)))
+         (printf "A moment later, you hear a loud sound, as if something has been unlocked.\n")))
       (case (every (lambda (x) (eq? x #t)) (hash-values button-states))
-          ((#f)
-           (hash-set! directions 11 '((north 0)  (south 7)  (east 0) (west 0)))
-           (hash-set! descriptions 11 (string-append
-              "You are in a small room, light shines in through two windows "
-              "on the east and west walls. On the north wall, you see a big "
-              "<<steel door>>, which is firmly shut. To the right of this door, "
-              "you see a <<button>> on the wall."))
-           (hash-set! pushables 11 '((button) (steel door)))
-           (printf "A moment later, you hear a loud sound, as if a door has been shut.\n")))))
+        ((#f)
+         (hash-set! directions 11 '((north 0)  (south 7)  (east 0) (west 0)))
+         (hash-set! descriptions 11 (string-append
+                                     "You are in a small room, light shines in through two windows "
+                                     "on the east and west walls. On the north wall, you see a big "
+                                     "<<steel door>>, which is firmly shut. To the right of this door, "
+                                     "you see a <<button>> on the wall."))
+         (hash-set! pushables 11 '((button) (steel door)))
+         (printf "A moment later, you hear a loud sound, as if a door has been shut.\n")))))
 
 ;; Execute steel door action
 (define (door rid)
@@ -280,9 +333,9 @@
           (cond
             ((procedure? procedure) (procedure args rid))
             ((eq? procedure #f) (if (null? args)
-                    ((printf interpreter-fail)
-                     (new-cycle rid))
-                    (try `(,@action ,(car args)) (cdr args))))
+                                    ((printf interpreter-fail)
+                                     (new-cycle rid))
+                                    (try `(,@action ,(car args)) (cdr args))))
             (else (printf unknown-error)))))
       ((printf interpreter-fail)
        (new-cycle rid))))

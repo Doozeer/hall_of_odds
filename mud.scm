@@ -88,6 +88,15 @@
     (11 (button) (steel door))
     (12 )))
 
+;; Game's main commands
+(define command-list
+  `(
+    (((move) (go) (walk)) ,move)
+    (((quit)) ,quit)
+    (((exit game)) ,exitgame)
+    (((push)) ,push)
+    ))
+
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
 (define unknown-error "[ERROR] Sorry, something strange happened!\n")
@@ -112,20 +121,7 @@
   
   (set-room-descriptions description-list)
   (set-room-directions directions-list)
-  
-  ;; Objects to push in each room
-  (hash-set! pushables 1  '((button)))
-  (hash-set! pushables 2  '((button)))
-  (hash-set! pushables 3  '((button)))
-  (hash-set! pushables 4  '((button)))
-  (hash-set! pushables 5  '((button)))
-  (hash-set! pushables 6  '((button)))
-  (hash-set! pushables 7  '((button)))
-  (hash-set! pushables 8  '((button)))
-  (hash-set! pushables 9  '((button)))
-  (hash-set! pushables 10 '((button)))
-  (hash-set! pushables 11 '((button) (steel door)))
-  (hash-set! pushables 12 '())
+  (set-room-pushables pushables-list)
   
   ;; Mapping functions to objects
   (hash-set! obj-actions '(button) button)

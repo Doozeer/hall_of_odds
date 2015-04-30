@@ -3,87 +3,90 @@
 (require srfi/1)
 
 ;; Room descriptions
-(define description-list '(
-                           (1
-                            "You are in a small room, illuminated only by the light "
-                            "that shines in from two small windows in the walls to "
-                            "the south and west. You see a <<button>> on the north wall, "
-                            "near the northeast corner of the room.")
-                           (2
-                            "You are in a small room, light shines in through a single "
-                            "window on the south wall. You can see a <<button>> in the "
-                            "middle of the north wall.")
-                           (3
-                            "You are in a small room, illuminated only by the light "
-                            "that shines in from two small windows in the walls to "
-                            "the south and east. You see a <<button>> on the north wall, "
-                            "near the northwest corner of the room.")
-                           (4
-                            "You are in a small room, light shines in through a single "
-                            "window on the east wall. You can see a <<button>> in the "
-                            "middle of the west wall.")
-                           (5
-                            "You are in a small room, light shines in through three windows "
-                            "on the walls to the north, east, and south. You can see a "
-                            "<<button>> below the window in the north wall.")
-                           (6
-                            "You are in a small room, light shines in through a single "
-                            "window on the north wall. You can see a <<button>> below "
-                            "the window.")
-                           (7
-                            "You are in a small room. This one is poorly lit, with light "
-                            "coming in only from the neighbouring rooms, through the passages. "
-                            "Despite the lower visibility, you can see a <<button>> on the "
-                            "north wall, near the northeast corner of the room.")
-                           (8
-                            "You are in a small room, light shines in through a single "
-                            "window on the north wall. You can see a <<button>> below "
-                            "the window.")
-                           (9
-                            "You are in a small room, light shines in through three windows "
-                            "on the walls to the north, west, and south. You can see a "
-                            "<<button>> below the window in the north wall.")
-                           (10
-                            "You are in a small room, light shines in through a single "
-                            "window on the west wall. You can see a <<button>> in the "
-                            "middle of the east wall.")
-                           (11
-                            "You are in a small room, light shines in through two windows "
-                            "on the east and west walls. On the north wall, you see a big "
-                            "<<steel door>>, which is firmly shut. To the right of this door, "
-                            "you see a <<button>> on the wall.")
-                           (12
-                            "Congratulations! You have escaped the Hall of Odds!")))
+(define description-list
+  '(
+    (1
+     "You are in a small room, illuminated only by the light "
+     "that shines in from two small windows in the walls to "
+     "the south and west. You see a <<button>> on the north wall, "
+     "near the northeast corner of the room.")
+    (2
+     "You are in a small room, light shines in through a single "
+     "window on the south wall. You can see a <<button>> in the "
+     "middle of the north wall.")
+    (3
+     "You are in a small room, illuminated only by the light "
+     "that shines in from two small windows in the walls to "
+     "the south and east. You see a <<button>> on the north wall, "
+     "near the northwest corner of the room.")
+    (4
+     "You are in a small room, light shines in through a single "
+     "window on the east wall. You can see a <<button>> in the "
+     "middle of the west wall.")
+    (5
+     "You are in a small room, light shines in through three windows "
+     "on the walls to the north, east, and south. You can see a "
+     "<<button>> below the window in the north wall.")
+    (6
+     "You are in a small room, light shines in through a single "
+     "window on the north wall. You can see a <<button>> below "
+     "the window.")
+    (7
+     "You are in a small room. This one is poorly lit, with light "
+     "coming in only from the neighbouring rooms, through the passages. "
+     "Despite the lower visibility, you can see a <<button>> on the "
+     "north wall, near the northeast corner of the room.")
+    (8
+     "You are in a small room, light shines in through a single "
+     "window on the north wall. You can see a <<button>> below "
+     "the window.")
+    (9
+     "You are in a small room, light shines in through three windows "
+     "on the walls to the north, west, and south. You can see a "
+     "<<button>> below the window in the north wall.")
+    (10
+     "You are in a small room, light shines in through a single "
+     "window on the west wall. You can see a <<button>> in the "
+     "middle of the east wall.")
+    (11
+     "You are in a small room, light shines in through two windows "
+     "on the east and west walls. On the north wall, you see a big "
+     "<<steel door>>, which is firmly shut. To the right of this door, "
+     "you see a <<button>> on the wall.")
+    (12
+     "Congratulations! You have escaped the Hall of Odds!")))
 
 ;; Room connections mapping
-(define directions-list '(
-                          (1  (north 10) (south 0)  (east 2) (west 0))
-                          (2  (north 0)  (south 0)  (east 3) (west 1))
-                          (3  (north 4)  (south 0)  (east 0) (west 2))
-                          (4  (north 6)  (south 3)  (east 0) (west 0))
-                          (5  (north 0)  (south 0)  (east 0) (west 6))
-                          (6  (north 0)  (south 4)  (east 5) (west 7))
-                          (7  (north 11) (south 0)  (east 6) (west 8))
-                          (8  (north 0)  (south 10) (east 7) (west 9))
-                          (9  (north 0)  (south 0)  (east 8) (west 0))
-                          (10 (north 8)  (south 1)  (east 0) (west 0))
-                          (11 (north 0)  (south 7)  (east 0) (west 0))
-                          (12 (north 0)  (south 0)  (east 0) (west 0))))
+(define directions-list
+  '(
+    (1  (north 10) (south 0)  (east 2) (west 0))
+    (2  (north 0)  (south 0)  (east 3) (west 1))
+    (3  (north 4)  (south 0)  (east 0) (west 2))
+    (4  (north 6)  (south 3)  (east 0) (west 0))
+    (5  (north 0)  (south 0)  (east 0) (west 6))
+    (6  (north 0)  (south 4)  (east 5) (west 7))
+    (7  (north 11) (south 0)  (east 6) (west 8))
+    (8  (north 0)  (south 10) (east 7) (west 9))
+    (9  (north 0)  (south 0)  (east 8) (west 0))
+    (10 (north 8)  (south 1)  (east 0) (west 0))
+    (11 (north 0)  (south 7)  (east 0) (west 0))
+    (12 (north 0)  (south 0)  (east 0) (west 0))))
 
 ;; Objects available for 'push' in each room
-(define pushables-list '(
-                         (1  (button))
-                         (2  (button))
-                         (3  (button))
-                         (4  (button))
-                         (5  (button))
-                         (6  (button))
-                         (7  (button))
-                         (8  (button))
-                         (9  (button))
-                         (10 (button))
-                         (11 (button) (steel door))
-                         (12 )))
+(define pushables-list
+  '(
+    (1  (button))
+    (2  (button))
+    (3  (button))
+    (4  (button))
+    (5  (button))
+    (6  (button))
+    (7  (button))
+    (8  (button))
+    (9  (button))
+    (10 (button))
+    (11 (button) (steel door))
+    (12 )))
 
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
@@ -148,6 +151,13 @@
   (for-each (lambda (direction)
               (hash-set! directions (car direction) (cdr direction)))
             direction-list))
+
+;; Function to set data from an associative list into the room pushables
+;; hash-table.
+(define (set-room-pushables pushables-list)
+  (for-each (lambda (pushable)
+              (hash-set! pushables (car pushable) (cdr pushable)))
+            pushables-list))
 
 ;; Function that exits the game. args may be empty or have only the word 'game'
 ;; so the command makes sense, i.e. 'quit' and 'quit game' are both valid

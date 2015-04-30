@@ -92,6 +92,24 @@
     (11 (button) (steel door))
     (12 )))
 
+;; Game's main commands. Each sublist begins with a list of commands separated
+;; in lists, followed by a reference to the function that is related to those
+;; commands. This is defined as a function so it can be defined before the
+;; definition of the functions.
+(define (command-list)
+  `((((move) (go) (walk)) ,move)
+    (((quit)) ,quit)
+    (((exit game)) ,exitgame)
+    (((push)) ,push)))
+
+;; Mapping game objects to action functions. Each sublist begins with a list of
+;; objects separated in lists, followed by a reference to the function that is
+;; related to those objects. This is defined as a function so it can be defined
+;; before the definition of the functions.
+(define (obj-action-list)
+  `((((button)) ,button)
+    (((steel door)) ,door)))
+
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
 (define unknown-error "[ERROR] Sorry, something strange happened!\n")
@@ -106,14 +124,11 @@
 
 ;; Initializes variables before starting the game
 (define (initialize)
-  (set-game-commands command-list)
+  (set-game-commands (command-list))
   (set-room-descriptions description-list)
   (set-room-directions directions-list)
   (set-room-pushables pushables-list)
-  
-  ;; Mapping functions to objects
-  (hash-set! obj-actions '(button) button)
-  (hash-set! obj-actions '(steel door) door)
+  (set-obj-actions (obj-action-list))
   
   ;; Init deactivated buttons
   (for-each (lambda (n)
@@ -343,21 +358,5 @@
            "wise enough to escape its walls, or are you fated to perish "
            "in this place without ever knowing freedom again?\n"))
   (new-cycle room-id))
-
-;; Game's main commands. Each sublist begins with a list of commands separated
-;; in lists, followed by a reference to the function that is related to those
-;; commands.
-(define command-list
-  `((((move) (go) (walk)) ,move)
-    (((quit)) ,quit)
-    (((exit game)) ,exitgame)
-    (((push)) ,push)))
-
-;; Mapping game objects to action functions. Each sublist begins with a list of
-;; objects separated in lists, followed by a reference to the function that is
-;; related to those objects.
-(define obj-action-list
-  `((((button)) ,button)
-    (((steel door)) ,door)))
 
 (startgame 1)

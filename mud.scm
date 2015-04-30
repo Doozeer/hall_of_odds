@@ -92,57 +92,7 @@
   (hash-set! commands '(exit game) exitgame)
   (hash-set! commands '(push) push)
   
-  ;; Room descriptions
-  (hash-set! descriptions 1 (string-append
-                             "You are in a small room, illuminated only by the light "
-                             "that shines in from two small windows in the walls to "
-                             "the south and west. You see a <<button>> on the north wall, "
-                             "near the northeast corner of the room."))
-  (hash-set! descriptions 2  (string-append
-                              "You are in a small room, light shines in through a single "
-                              "window on the south wall. You can see a <<button>> in the "
-                              "middle of the north wall."))
-  (hash-set! descriptions 3  (string-append
-                              "You are in a small room, illuminated only by the light "
-                              "that shines in from two small windows in the walls to "
-                              "the south and east. You see a <<button>> on the north wall, "
-                              "near the northwest corner of the room."))
-  (hash-set! descriptions 4  (string-append
-                              "You are in a small room, light shines in through a single "
-                              "window on the east wall. You can see a <<button>> in the "
-                              "middle of the west wall."))
-  (hash-set! descriptions 5  (string-append
-                              "You are in a small room, light shines in through three windows "
-                              "on the walls to the north, east, and south. You can see a "
-                              "<<button>> below the window in the north wall."))
-  (hash-set! descriptions 6  (string-append
-                              "You are in a small room, light shines in through a single "
-                              "window on the north wall. You can see a <<button>> below "
-                              "the window."))
-  (hash-set! descriptions 7  (string-append
-                              "You are in a small room. This one is poorly lit, with light "
-                              "coming in only from the neighbouring rooms, through the passages. "
-                              "Despite the lower visibility, you can see a <<button>> on the "
-                              "north wall, near the northeast corner of the room."))
-  (hash-set! descriptions 8  (string-append
-                              "You are in a small room, light shines in through a single "
-                              "window on the north wall. You can see a <<button>> below "
-                              "the window."))
-  (hash-set! descriptions 9  (string-append
-                              "You are in a small room, light shines in through three windows "
-                              "on the walls to the north, west, and south. You can see a "
-                              "<<button>> below the window in the north wall."))
-  (hash-set! descriptions 10 (string-append
-                              "You are in a small room, light shines in through a single "
-                              "window on the west wall. You can see a <<button>> in the "
-                              "middle of the east wall."))
-  (hash-set! descriptions 11 (string-append
-                              "You are in a small room, light shines in through two windows "
-                              "on the east and west walls. On the north wall, you see a big "
-                              "<<steel door>>, which is firmly shut. To the right of this door, "
-                              "you see a <<button>> on the wall."))
-  (hash-set! descriptions 12 (string-append
-                              "Congratulations! You have escaped the Hall of Odds!"))
+  (set-room-descriptions description-list)
   
   (set-room-directions directions-list)
   
@@ -173,7 +123,9 @@
 ;; hash-table.
 (define (set-room-descriptions description-list)
   (for-each (lambda (description)
-              (hash-set! descriptions (car description) (string-append `(,@(cdr description)))))
+              (hash-set! descriptions
+                         (car description)
+                         (foldr string-append "" (cdr description))))
             description-list))
 
 ;; Function to set data from an associative list into the room directions

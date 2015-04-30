@@ -120,6 +120,13 @@
               (hash-set! descriptions (car description) `(,@(cdr description))))
             description-list))
 
+;; Function to set data from an associative list into the room directions
+;; hash-table.
+(define (set-room-directions direction-list)
+  (for-each (lambda (direction)
+              (hash-set! directions (car direction) `(,@(cdr direction))))
+            direction-list))
+
 ;; Function that exits the game. args may be empty or have only the word 'game'
 ;; so the command makes sense, i.e. 'quit' and 'quit game' are both valid
 (define (quit args rid)

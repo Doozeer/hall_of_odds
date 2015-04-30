@@ -117,7 +117,7 @@
 ;; hash-table.
 (define (set-room-descriptions description-list)
   (for-each (lambda (description)
-              (hash-set! descriptions (car description) `(,@(cdr description))))
+              (hash-set! descriptions (car description) (car (cdr description))))
             description-list))
 
 ;; Function to set data from an associative list into the room directions

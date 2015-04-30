@@ -154,6 +154,17 @@
                           command-tokens)))
             command-list))
 
+;; Function to set data from an associative list into the object actions
+;; hash-table.
+(define (set-obj-actions obj-actions-list)
+  (for-each (lambda (action-mapping)
+              (let [(objects (car action-mapping))
+                    (function (car (cdr action-mapping)))]
+                (for-each (lambda (object)
+                            (hash-set! obj-actions object function))
+                          objects)))
+            obj-actions-list))
+
 ;; Function that exits the game. args may be empty or have only the word 'game'
 ;; so the command makes sense, i.e. 'quit' and 'quit game' are both valid
 (define (quit args rid)

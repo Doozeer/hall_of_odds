@@ -91,19 +91,7 @@
   (hash-set! descriptions 12 (string-append
               "Congratulations! You have escaped the Hall of Odds!"))
   
-  ;; Room connections mapping
-  (hash-set! directions 1  '((north 10) (south 0)  (east 2) (west 0)))
-  (hash-set! directions 2  '((north 0)  (south 0)  (east 3) (west 1)))
-  (hash-set! directions 3  '((north 4)  (south 0)  (east 0) (west 2)))
-  (hash-set! directions 4  '((north 6)  (south 3)  (east 0) (west 0)))
-  (hash-set! directions 5  '((north 0)  (south 0)  (east 0) (west 6)))
-  (hash-set! directions 6  '((north 0)  (south 4)  (east 5) (west 7)))
-  (hash-set! directions 7  '((north 11) (south 0)  (east 6) (west 8)))
-  (hash-set! directions 8  '((north 0)  (south 10) (east 7) (west 9)))
-  (hash-set! directions 9  '((north 0)  (south 0)  (east 8) (west 0)))
-  (hash-set! directions 10 '((north 8)  (south 1)  (east 0) (west 0)))
-  (hash-set! directions 11 '((north 0)  (south 7)  (east 0) (west 0)))
-  (hash-set! directions 12 '((north 0)  (south 0)  (east 0) (west 0)))
+  (set-room-directions directions-list)
   
   ;; Objects to push in each room
   (hash-set! pushables 1  '((button)))

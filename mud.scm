@@ -155,7 +155,7 @@
               (hash-set! pushables (car pushable) (cdr pushable)))
             pushables-list))
 
-;; Function to set data from an associative list into the room pushables
+;; Function to set data from an associative list into the game commands
 ;; hash-table.
 (define (set-game-commands command-list)
   (for-each (lambda (command-mapping)

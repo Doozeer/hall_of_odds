@@ -70,6 +70,21 @@
                           (11 (north 0)  (south 7)  (east 0) (west 0))
                           (12 (north 0)  (south 0)  (east 0) (west 0))))
 
+;; Objects available for 'push' in each room
+(define pushables-list '(
+                         (1  (button))
+                         (2  (button))
+                         (3  (button))
+                         (4  (button))
+                         (5  (button))
+                         (6  (button))
+                         (7  (button))
+                         (8  (button))
+                         (9  (button))
+                         (10 (button))
+                         (11 (button) (steel door))
+                         (12 )))
+
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
 (define unknown-error "[ERROR] Sorry, something strange happened!\n")

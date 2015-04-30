@@ -124,7 +124,7 @@
 ;; hash-table.
 (define (set-room-directions direction-list)
   (for-each (lambda (direction)
-              (hash-set! directions (car direction) `(,@(cdr direction))))
+              (hash-set! directions (car direction) (cdr direction)))
             direction-list))
 
 ;; Function that exits the game. args may be empty or have only the word 'game'

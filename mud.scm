@@ -155,6 +155,17 @@
               (hash-set! pushables (car pushable) (cdr pushable)))
             pushables-list))
 
+;; Function to set data from an associative list into the room pushables
+;; hash-table.
+(define (set-game-commands command-list)
+  (for-each (lambda (command-mapping)
+             (let [(command-tokens (car command-mapping))
+                   (function (car (cdr command-mapping)))]
+               (for-each (lambda (command-token)
+                           (hash-set! commands command-token function))
+                         command-tokens)))
+            command-list))
+
 ;; Function that exits the game. args may be empty or have only the word 'game'
 ;; so the command makes sense, i.e. 'quit' and 'quit game' are both valid
 (define (quit args rid)

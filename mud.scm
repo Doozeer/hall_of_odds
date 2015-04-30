@@ -113,6 +113,12 @@
               (hash-set! button-states n #f))
             (hash-keys descriptions)))
 
+;; Function to set data from an associative list into the room description
+;; hash-table.
+(define (set-room-descriptions description-list)
+  (for-each (lambda (description)
+              (hash-set! descriptions (car description) `(,@(cdr description))))
+            description-list))
 
 ;; Function that exits the game. args may be empty or have only the word 'game'
 ;; so the command makes sense, i.e. 'quit' and 'quit game' are both valid

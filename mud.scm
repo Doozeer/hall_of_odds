@@ -199,21 +199,20 @@
 
 ;; Process move command, in which args must specify a valid direction in which
 ;; to move from the specified room
-(define (move args rid) 
-  (cond
-    ((or (null? args) (> (length args) 1))
-     (printf "Sorry, please say one valid direction to move (north, south, east, west).\n")
-     (new-cycle rid))
-    ((member (car args) '(north south east west))
-     (let ((new-room (lookup rid (car args))))
-       (if (zero? new-room)
-           ((printf "Sorry, you can't go ~a from your current room.\n" (car args))
-            (new-cycle rid))
-           ((printf "Moving to the next room to the ~a...\n" (car args))
-            (new-cycle new-room)))))
-    (else 
-     (printf "Sorry, '~a' isn't a valid direction to move.\n" (car args))
-     (new-cycle rid))))
+(define (move args rid)
+  (if (or (null? args) (> (length args) 1))
+      ((printf "Sorry, please say one valid direction to move (north, south, east, west).\n")
+       (new-cycle rid))
+      (let [(direction (car args))]
+        (if (member direction '(north south east west))
+            (let [(new-room (lookup rid direction))]
+              (if (zero? new-room)
+                  ((printf "Sorry, you can't go ~a from your current room.\n" direction)
+                   (new-cycle rid))
+                  ((printf "Moving to the next room to the ~a...\n" direction)
+                   (new-cycle new-room))))
+            ((printf "Sorry, '~a' isn't a valid direction to move.\n" direction)
+             (new-cycle rid))))))
 
 ;; Process the push command, in which args must be a valid item in the
 ;; pushables hash-table for the specified room

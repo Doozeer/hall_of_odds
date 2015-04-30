@@ -4,8 +4,7 @@
 
 ;; Room descriptions
 (define description-list
-  '(
-    (1
+  '((1
      "You are in a small room, illuminated only by the light "
      "that shines in from two small windows in the walls to "
      "the south and west. You see a <<button>> on the north wall, "
@@ -58,8 +57,7 @@
 
 ;; Room connections mapping
 (define directions-list
-  '(
-    (1  (north 10) (south 0)  (east 2) (west 0))
+  '((1  (north 10) (south 0)  (east 2) (west 0))
     (2  (north 0)  (south 0)  (east 3) (west 1))
     (3  (north 4)  (south 0)  (east 0) (west 2))
     (4  (north 6)  (south 3)  (east 0) (west 0))
@@ -74,8 +72,7 @@
 
 ;; Objects available for 'push' in each room
 (define pushables-list
-  '(
-    (1  (button))
+  '((1  (button))
     (2  (button))
     (3  (button))
     (4  (button))
@@ -331,11 +328,14 @@
 
 ;; Game's main commands
 (define command-list
-  `(
-    (((move) (go) (walk)) ,move)
+  `((((move) (go) (walk)) ,move)
     (((quit)) ,quit)
     (((exit game)) ,exitgame)
-    (((push)) ,push)
-    ))
+    (((push)) ,push)))
+
+;; Mapping game objects to action functions
+(define obj-action-list
+  `((((button)) ,button)
+    (((steel door)) ,door)))
 
 (startgame 1)

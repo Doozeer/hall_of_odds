@@ -2,7 +2,9 @@
 
 (require srfi/1)
 
-;; Room descriptions
+;; Room descriptions list. Each sublist has the number of a room as
+;; the first element, followed by the description of the room in
+;; multiple strings
 (define description-list
   '((1
      "You are in a small room, illuminated only by the light "
@@ -55,7 +57,10 @@
     (12
      "Congratulations! You have escaped the Hall of Odds!")))
 
-;; Room connections mapping
+;; Room connections mapping. Each sublist begins with the number of
+;; a room, followed by lists associating each direction to the number
+;; of the connecting room. A zero means there's no room connected in
+;; that direction.
 (define directions-list
   '((1  (north 10) (south 0)  (east 2) (west 0))
     (2  (north 0)  (south 0)  (east 3) (west 1))
@@ -70,7 +75,9 @@
     (11 (north 0)  (south 7)  (east 0) (west 0))
     (12 (north 0)  (south 0)  (east 0) (west 0))))
 
-;; Objects available for 'push' in each room
+;; Objects available for 'push' in each room. Each sublist begins
+;; with the number of a room, followed by lists containing the names
+;; of the objects present in it.
 (define pushables-list
   '((1  (button))
     (2  (button))
@@ -140,11 +147,11 @@
 ;; hash-table.
 (define (set-game-commands command-list)
   (for-each (lambda (command-mapping)
-             (let [(command-tokens (car command-mapping))
-                   (function (car (cdr command-mapping)))]
-               (for-each (lambda (command-token)
-                           (hash-set! commands command-token function))
-                         command-tokens)))
+              (let [(command-tokens (car command-mapping))
+                    (function (car (cdr command-mapping)))]
+                (for-each (lambda (command-token)
+                            (hash-set! commands command-token function))
+                          command-tokens)))
             command-list))
 
 ;; Function that exits the game. args may be empty or have only the word 'game'
@@ -326,14 +333,18 @@
            "in this place without ever knowing freedom again?\n"))
   (new-cycle room-id))
 
-;; Game's main commands
+;; Game's main commands. Each sublist begins with a list of commands separated
+;; in lists, followed by a reference to the function that is related to those
+;; commands.
 (define command-list
   `((((move) (go) (walk)) ,move)
     (((quit)) ,quit)
     (((exit game)) ,exitgame)
     (((push)) ,push)))
 
-;; Mapping game objects to action functions
+;; Mapping game objects to action functions. Each sublist begins with a list of
+;; objects separated in lists, followed by a reference to the function that is
+;; related to those objects.
 (define obj-action-list
   `((((button)) ,button)
     (((steel door)) ,door)))

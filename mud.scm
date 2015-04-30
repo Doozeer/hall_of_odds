@@ -93,7 +93,6 @@
   (hash-set! commands '(push) push)
   
   (set-room-descriptions description-list)
-  
   (set-room-directions directions-list)
   
   ;; Objects to push in each room
@@ -125,7 +124,7 @@
   (for-each (lambda (description)
               (hash-set! descriptions
                          (car description)
-                         (foldr string-append "" (cdr description))))
+                         (string-append* (cdr description))))
             description-list))
 
 ;; Function to set data from an associative list into the room directions

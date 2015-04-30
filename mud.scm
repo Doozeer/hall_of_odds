@@ -2,6 +2,21 @@
 
 (require srfi/1)
 
+;; Room connections mapping
+(define directions-list '(
+                         (1  (north 10) (south 0)  (east 2) (west 0))
+                         (2  (north 0)  (south 0)  (east 3) (west 1))
+                         (3  (north 4)  (south 0)  (east 0) (west 2))
+                         (4  (north 6)  (south 3)  (east 0) (west 0))
+                         (5  (north 0)  (south 0)  (east 0) (west 6))
+                         (6  (north 0)  (south 4)  (east 5) (west 7))
+                         (7  (north 11) (south 0)  (east 6) (west 8))
+                         (8  (north 0)  (south 10) (east 7) (west 9))
+                         (9  (north 0)  (south 0)  (east 8) (west 0))
+                         (10 (north 8)  (south 1)  (east 0) (west 0))
+                         (11 (north 0)  (south 7)  (east 0) (west 0))
+                         (12 (north 0)  (south 0)  (east 0) (west 0))))
+
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
 (define unknown-error "[ERROR] Sorry, something strange happened!\n")

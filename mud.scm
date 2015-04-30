@@ -88,15 +88,6 @@
     (11 (button) (steel door))
     (12 )))
 
-;; Game's main commands
-(define command-list
-  `(
-    (((move) (go) (walk)) ,move)
-    (((quit)) ,quit)
-    (((exit game)) ,exitgame)
-    (((push)) ,push)
-    ))
-
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
 (define unknown-error "[ERROR] Sorry, something strange happened!\n")
@@ -111,14 +102,7 @@
 
 ;; Initializes variables before starting the game
 (define (initialize)
-  ;; List of initial commands
-  (hash-set! commands '(move) move)
-  (hash-set! commands '(go) move)
-  (hash-set! commands '(walk) move)
-  (hash-set! commands '(quit) quit)
-  (hash-set! commands '(exit game) exitgame)
-  (hash-set! commands '(push) push)
-  
+  (set-game-commands command-list)
   (set-room-descriptions description-list)
   (set-room-directions directions-list)
   (set-room-pushables pushables-list)
@@ -344,5 +328,14 @@
            "wise enough to escape its walls, or are you fated to perish "
            "in this place without ever knowing freedom again?\n"))
   (new-cycle room-id))
+
+;; Game's main commands
+(define command-list
+  `(
+    (((move) (go) (walk)) ,move)
+    (((quit)) ,quit)
+    (((exit game)) ,exitgame)
+    (((push)) ,push)
+    ))
 
 (startgame 1)

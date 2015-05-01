@@ -291,11 +291,12 @@
 ;; Get a list of connected directions to move from a room
 (define (get-available-dirs rid)
   (let ((room-dirs (get-room-dirs rid)))
-    (if (pair? room-dirs)
-        (map car (filter
-                  (lambda (x)
-                    (> (car (cdr x)) 0))
-                  room-dirs))
+    (if (list? room-dirs)
+        (map car
+             (filter
+              (lambda (x)
+                (> (car (cdr x)) 0))
+              room-dirs))
         room-dirs)))
 
 ;; Print to the user a list of directions he can move from the current room

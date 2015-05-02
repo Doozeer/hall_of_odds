@@ -112,7 +112,7 @@
 ;; commands. This is defined as a function so it can be defined before the
 ;; definition of the functions.
 (define (command-list)
-  `((((move) (go) (walk)) ,move)
+  `((((move) (move to the) (go) (go to the) (walk) (walk to the)) ,move)
     (((quit) (quit game) (exit game)) ,quit)
     (((push)) ,push)))
 

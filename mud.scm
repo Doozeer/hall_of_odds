@@ -113,8 +113,7 @@
 ;; definition of the functions.
 (define (command-list)
   `((((move) (go) (walk)) ,move)
-    (((quit)) ,quit)
-    (((exit game)) ,exitgame)
+    (((quit) (quit game) (exit game)) ,quit)
     (((push)) ,push)))
 
 ;; Mapping game objects to action functions. Each sublist begins with a list of
@@ -201,18 +200,8 @@
                           objects)))
             obj-actions-list))
 
-;; Function that exits the game. args may be empty or have only the word 'game'
-;; so the command makes sense, i.e. 'quit' and 'quit game' are both valid
+;; This function handles the commands to quit the game.
 (define (quit args rid)
-  (if (or (null? args) (and (eq? (car args) 'game) (null? (cdr args))))
-      (exit)
-      ((printf interpreter-fail)
-       (new-cycle rid))))
-
-;; The same as the function quit, but for the 'exit game' command, and will
-;; only accept empty args. This way, typing simply 'exit', which would be
-;; too much ambiguous, won't quit the game.
-(define (exitgame args rid)
   (if (null? args)
       (exit)
       ((printf interpreter-fail)

@@ -347,8 +347,8 @@
             (build-split-command-list action args)
             longest-match)
         (if (hash-has-key? commands action)
-            (loop `(,@action (car args)) (cdr args) (build-split-command-list action args))
-            (loop `(,@action (car args)) (cdr args) longest-match)))))
+            (loop `(,@action ,(car args)) (cdr args) (build-split-command-list action args))
+            (loop `(,@action ,(car args)) (cdr args) longest-match)))))
 
 ;; This function builds a list separating the main command in a sublist and
 ;; the arguments following that.

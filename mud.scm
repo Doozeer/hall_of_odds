@@ -337,29 +337,47 @@
 (define (lookup room-id direction)
   (car (assq-ref (get-room-dirs room-id) direction)))
 
-;; Command interpreting function. It tries to match as little as possible
-;; of the first words in the command to one of the initial keywords specified
-;; in the commands hash-table. It begins trying to match the first word to a
-;; command and use the remaining words as arguments for that command. When no
-;; match is found, the first word of the arguments is moved to the tail of the
-;; command, and matching it attempted again. This process is repeated until a
-;; either a match is found and the assigned function is executed, or the
-;; argument list is empty and the user is alerted that his command was invalid
-;; and the game repeats one cycle.
+;; Command interpreting function. It tries to separate the input into
+;; a known command and its arguments, and then executes it.
 (define (interpret command rid)
   (if (not (null? command))
-      (let try [(action `(,(car command)))
-                (args (cdr command))]
-        (let ((procedure (hash-ref commands action #f)))
-          (cond
-            ((procedure? procedure) (procedure args rid))
-            ((eq? procedure #f) (if (null? args)
-                                    ((printf interpreter-fail)
-                                     (new-cycle rid))
-                                    (try `(,@action ,(car args)) (cdr args))))
-            (else (printf unknown-error)))))
-      ((printf interpreter-fail)
-       (new-cycle rid))))
+      (let* [(split-command (split-longest-match command))]
+        (if split-command
+            (exec-split-command split-command rid)
+            (show-interpreter-fail rid)))
+      (show-interpreter-fail rid)))
+        
+;; Splits the command into a list containing the longest key from the
+;; commands hash-table found in the command, followed by the arguments.
+(define (split-longest-match command)
+  (let loop [(action `(,(car command)))
+             (args (cdr command))
+             (longest-match #f)]
+    (if (null? args)
+        (if (hash-has-key? commands action)
+            (build-split-command-list action args)
+            longest-match)
+        (if (hash-has-key? commands action)
+            (loop `(,@action (car args)) (cdr args) (build-split-command-list action args))
+            (loop `(,@action (car args)) (cdr args) longest-match)))))
+
+;; This function builds a list separating the main command in a sublist and
+;; the arguments following that.
+(define (build-split-command-list command args)
+  `(,command ,@args))
+
+;; Attempts to execute a list with previously separated command and arguments.
+(define (exec-split-command split-command rid)
+  (let [(function (hash-ref commands (car split-command) #f))
+        (args (cdr split-command))]
+    (if (procedure? function)
+        (function args rid)
+        (show-interpreter-fail rid))))
+
+;; Shows interpreter error message and begins new cycle
+(define (show-interpreter-fail rid)
+  (printf interpreter-fail)
+  (new-cycle rid))
 
 ;; Reads a line from the user and converts it to a list of symbols
 (define (read-command)

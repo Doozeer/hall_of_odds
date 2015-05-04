@@ -132,6 +132,7 @@
     (((quit) (quit game) (exit game)) ,quit)
     (((drop) (discard) (throw away)) ,drop-item)
     (((pick up) (grab) (get)) ,pickup)
+    (((use)) ,use)
     (((push)) ,push)))
 
 ;; Mapping game objects to action functions. Each sublist begins with a list of
@@ -291,6 +292,14 @@
           (format "~a" (car keyword))
           (format "~a ~a" (car keyword) (keyword->string (cdr keyword))))
       (format "~a" keyword)))
+
+;; This function handles the commands to use items
+(define (use args rid)
+  (cond
+    ((player-has-item? args) ((hash-ref obj-actions args) args rid))
+    (else (printf "You don't have an item called '~a' in your inventory.\n"
+                  (keyword->string args))
+          (new-cycle rid))))
 
 ;; This function handles the commands to quit the game.
 (define (quit args rid)

@@ -140,8 +140,9 @@
 ;; related to those objects. This is defined as a function so it can be defined
 ;; before the definition of the functions.
 (define (obj-action-list)
-  `((((button))     ,button)
-    (((steel door)) ,door)))
+  `((((button))         ,button)
+    (((steel door))     ,door)
+    (((strange device)) ,strange-device)))
 
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
@@ -173,7 +174,7 @@
   ;; Init deactivated buttons
   (for-each (lambda (n)
               (hash-set! button-states n #f))
-            (hash-keys descriptions)))
+            (range 1 12)))
 
 ;; Function to set data from an associative list into the room description
 ;; hash-table.
@@ -296,7 +297,7 @@
 ;; This function handles the commands to use items
 (define (use args rid)
   (cond
-    ((player-has-item? args) ((hash-ref obj-actions args) args rid))
+    ((player-has-item? args) ((hash-ref obj-actions args) rid))
     (else (printf "You don't have an item called '~a' in your inventory.\n"
                   (keyword->string args))
           (new-cycle rid))))
@@ -343,17 +344,27 @@
     ((#f) (printf "[ERROR] Button undefined for room ~a.\n" rid)))
   (new-cycle rid))
 
+;; This function executes the action of using the 'strange device' item.
+(define (strange-device rid)
+  (let* [(buttons (hash-values button-states))
+         (active (count (lambda (x) x) buttons))
+         (inactive (count false? buttons))]
+    (printf "A cryptic message appears on a small screen in the strange device:\n")
+    (printf "<<<< ~a ODD(S)  ///  ~a EVEN(S) >>>>\n" active inactive))
+  (new-cycle rid))
+    
+
 ;; Control opening of the steel door. If the door is closed and all button
 ;; are active, the description, room connections, and  list of interactive
 ;; items in room 11 are changed to reflected its opening. If the door is
 ;; open and at least one button is inactive, the door is closed.
 (define (eval-buttons)
   (if (zero? (lookup 11 'north))
-      (case (every (lambda (x) (eq? x #t)) (hash-values button-states))
+      (case (every (lambda (x) x) (hash-values button-states))
         ((#t)
          (swap-states 11)
          (printf "A moment later, you hear a loud sound, as if something has been unlocked.\n")))
-      (case (every (lambda (x) (eq? x #t)) (hash-values button-states))
+      (case (every (lambda (x) x) (hash-values button-states))
         ((#f)
          (swap-states 11)
          (printf "A moment later, you hear a loud sound, as if a door has been shut.\n")))))
@@ -519,4 +530,4 @@
            "in this place without ever knowing freedom again?\n"))
   (new-cycle room-id))
 
-(startgame 5)
+(startgame 1)

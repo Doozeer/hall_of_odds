@@ -4,7 +4,7 @@
 
 ;; Room descriptions list. Each sublist has the number of a room as
 ;; the first element, followed by the description of the room in
-;; multiple strings
+;; multiple strings.
 (define description-list
   '((1
      "You are in a small room, illuminated only by the light "
@@ -107,6 +107,22 @@
 (define alt-pushables
   '((button)))
 
+;; Initial item lists for each room and player's inventory.
+(define initial-items
+  '((1      )
+    (2      )
+    (3      )
+    (4      )
+    (5      (strange device))
+    (6      )
+    (7      )
+    (8      )
+    (9      )
+    (10     )
+    (11     )
+    (12     )
+    (player )))
+
 ;; Game's main commands. Each sublist begins with a list of commands separated
 ;; in lists, followed by a reference to the function that is related to those
 ;; commands. This is defined as a function so it can be defined before the
@@ -114,6 +130,8 @@
 (define (command-list)
   `((((move) (move to the) (go) (go to the) (walk) (walk to the)) ,move)
     (((quit) (quit game) (exit game)) ,quit)
+    (((drop) (discard) (throw away)) ,drop-item)
+    (((pick up) (grab) (get)) ,pickup)
     (((push)) ,push)))
 
 ;; Mapping game objects to action functions. Each sublist begins with a list of
@@ -121,12 +139,11 @@
 ;; related to those objects. This is defined as a function so it can be defined
 ;; before the definition of the functions.
 (define (obj-action-list)
-  `((((button)) ,button)
+  `((((button))     ,button)
     (((steel door)) ,door)))
 
 ;; Common error messages
 (define interpreter-fail "Sorry, I couldn't understand what you want to do.\n")
-(define unknown-error "[ERROR] Sorry, something strange happened!\n")
 
 ;; Hash-table declarations
 (define commands      (make-hash))
@@ -136,14 +153,16 @@
 (define obj-actions   (make-hash))
 (define button-states (make-hash))
 (define alt-states    (make-hash))
+(define item-lists    (make-hash))
 
 ;; Initializes variables before starting the game
 (define (initialize)
-  (set-game-commands (command-list))
+  (set-game-commands     (command-list))
   (set-room-descriptions description-list)
-  (set-room-directions directions-list)
-  (set-room-pushables pushables-list)
-  (set-obj-actions (obj-action-list))
+  (set-room-directions   directions-list)
+  (set-room-pushables    pushables-list)
+  (set-obj-actions       (obj-action-list))
+  (set-item-lists        initial-items)
   
   ;; Init alt-states
   (hash-set! alt-states 'description alt-description)
@@ -163,6 +182,13 @@
                          (car description)
                          (string-append* (cdr description))))
             description-list))
+
+;; Function to set data from an associative list into the item lists
+;; hash-table.
+(define (set-item-lists lists)
+  (for-each (lambda (list)
+              (hash-set! item-lists (car list) (cdr list)))
+            lists))
 
 ;; Function to set data from an associative list into the room directions
 ;; hash-table.
@@ -199,6 +225,72 @@
                             (hash-set! obj-actions object function))
                           objects)))
             obj-actions-list))
+
+;; Remove an item from the player's inventory
+(define (remove-from-inventory item)
+  (let [(inventory (hash-ref item-lists 'player))]
+    (hash-set! item-lists 'player (remove* (list item) inventory))))
+
+;; Add an item to the player's inventory
+(define (add-to-inventory item)
+  (let [(inventory (hash-ref item-lists 'player))]
+    (hash-set! item-lists 'player (cons item inventory))))
+
+;; Remove an item from a room
+(define (remove-from-room item rid)
+  (let [(items (hash-ref item-lists rid))]
+    (hash-set! item-lists rid (remove* (list item) items))))
+
+;; Add an item to a room
+(define (add-to-room item rid)
+  (let [(items (hash-ref item-lists rid))]
+    (hash-set! item-lists rid (cons item items))))
+
+;; Returns whether the player's inventory contains an item
+(define (player-has-item? item)
+  (member item (hash-ref item-lists 'player)))
+
+;; Returns whether a room contains an item
+(define (room-has-item? item rid)
+  (member item (hash-ref item-lists rid)))
+
+;; Move an item from a room to the player's inventory.
+(define (item-room->player item rid)
+  (case (room-has-item? item rid)
+    ((#f) (printf "There's no item called '~a' in the room.\n"
+                  (keyword->string item)))
+    (else (remove-from-room item rid)
+          (add-to-inventory item)
+          (printf "You pick up the ~a.\n"
+                  (keyword->string item)))))
+
+;; Move an item from the player's inventory to a room.
+(define (item-player->room item rid)
+  (case (player-has-item? item)
+    ((#f) (printf "There's no item called '~a' in your inventory.\n"
+                  (keyword->string item)))
+    (else (remove-from-inventory item)
+          (add-to-room item rid)
+          (printf "You throw away the ~a.\n"
+                  (keyword->string item)))))
+
+;; This function handles the commands to pick up items from a room.
+(define (pickup args rid)
+  (item-room->player args rid)
+  (new-cycle rid))
+
+;; This function handles the commands to drop an item.
+(define (drop-item args rid)
+  (item-player->room args rid)
+  (new-cycle rid))
+
+;; This function converts a keyword list into a string.
+(define (keyword->string keyword)
+  (if (list? keyword)
+      (if (null? (cdr keyword))
+          (format "~a" (car keyword))
+          (format "~a ~a" (car keyword) (keyword->string (cdr keyword))))
+      (format "~a" keyword)))
 
 ;; This function handles the commands to quit the game.
 (define (quit args rid)
@@ -294,15 +386,41 @@
     (if (list? dirs)
         (case (length dirs)
           ((0) (printf "You see no exits from this room!\n"))
-          ((1) (printf "You see an exit to the ~a.\n" (car dirs)))
-          (else (printf "You see exits to the ~a~a" (car dirs) (append-dirs (cdr dirs)))))
+          ((1) (printf "You see an exit to the <<~a>>.\n"
+                       (car dirs)))
+          (else (printf "You see exits to the <<~a>>~a.\n"
+                        (car dirs) (string-list (cdr dirs)))))
         (printf "[ERROR] Could not retrieve directions for room ~a!\n" rid))))
 
-;; Auxiliary function to build strings for the print-available-dirs function
-(define (append-dirs dirs)
+;; Auxiliary function to build strings to list items in a list.
+(define (string-list dirs)
   (if (null? (cdr dirs))
-      (format " and ~a.\n" (car dirs))
-      (format ", ~a~a" (car dirs) (append-dirs (cdr dirs)))))
+      (format " and <<~a>>"
+              (keyword->string (car dirs)))
+      (format ", <<~a>>~a"
+              (keyword->string (car dirs)) (string-list (cdr dirs)))))
+
+;; Print to the user items that are on the floor of the room.
+(define (print-room-items rid)
+  (let [(items (hash-ref item-lists rid #f))]
+    (if (and items (> (length items) 0))
+        (if (= (length items) 1)
+            (printf "You can see a <<~a>> on the floor.\n"
+                    (keyword->string (car items)))
+            (printf "You can see the following items on the floor: <<~a>>~a.\n"
+                    (keyword->string (car items)) (string-list (cdr items))))
+        #f)))
+
+;; Print to the user items that are in his inventory.
+(define (print-inventory)
+  (let [(items (hash-ref item-lists 'player #f))]
+    (if (and items (> (length items) 0))
+        (if (= (length items) 1)
+            (printf "Your inventory contains a <<~a>>.\n"
+                    (keyword->string (car items)))
+            (printf "Your inventory contains the following: <<~a>>~a.\n"
+                    (keyword->string (car items)) (string-list (cdr items))))
+        #f)))
 
 (define (assq-ref assqlist id)
   (let ((list (assq id assqlist)))
@@ -335,7 +453,7 @@
             (exec-split-command split-command rid)
             (show-interpreter-fail rid)))
       (show-interpreter-fail rid)))
-        
+
 ;; Splits the command into a list containing the longest key from the
 ;; commands hash-table found in the command, followed by the arguments.
 (define (split-longest-match command)
@@ -344,15 +462,15 @@
              (longest-match #f)]
     (if (null? args)
         (if (hash-has-key? commands action)
-            (build-split-command-list action args)
+            (build-comm-args action args)
             longest-match)
         (if (hash-has-key? commands action)
-            (loop `(,@action ,(car args)) (cdr args) (build-split-command-list action args))
+            (loop `(,@action ,(car args)) (cdr args) (build-comm-args action args))
             (loop `(,@action ,(car args)) (cdr args) longest-match)))))
 
 ;; This function builds a list separating the main command in a sublist and
 ;; the arguments following that.
-(define (build-split-command-list command args)
+(define (build-comm-args command args)
   `(,command ,@args))
 
 ;; Attempts to execute a list with previously separated command and arguments.
@@ -377,7 +495,9 @@
 (define (new-cycle rid)
   (printf "~a\n" (get-room-description rid))
   (if (eq? rid 12) (exit) 'continue)
+  (print-room-items rid)
   (print-available-dirs rid)
+  (print-inventory)
   (printf "> ")
   (interpret (read-command) rid))
 
@@ -390,4 +510,4 @@
            "in this place without ever knowing freedom again?\n"))
   (new-cycle room-id))
 
-(startgame 1)
+(startgame 5)
